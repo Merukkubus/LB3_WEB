@@ -1,0 +1,27 @@
+﻿@using LB3.Models
+@model List<LB3.Models.Entities.Human>
+@{
+    ViewBag.Title = "ListOfHumans";
+}
+
+<h2>Список людей</h2>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th class="text-center">Наименование</th>
+            <th class="text-center">Возраст</th>
+            <th class="text-center">#</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var human in Model)
+        {
+            <tr class="text-center">
+                <td>@human.LastName @human.FirstName @human.Patronymic</td>
+                <td>@human.Age</td>
+                <td>@Html.ActionLink("подробнее", "PersonalDetails", "LB3", new { humanId = human.Id }, null)</td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -1,0 +1,34 @@
+﻿@model LB3.Models.Entities.Human
+
+@{
+    ViewBag.Title = "PersonalDetails";
+}
+
+<h2>Люди</h2>
+<h4>Человек</h4>
+<hr />
+
+<div class="row">
+    <div class="col-md-1">@Html.LabelFor(m => m.LastName)</div>
+    <div class="col-md-3">@Html.DisplayFor(m => m.LastName)</div>
+
+    <div class="col-md-1">@Html.LabelFor(m => m.FirstName)</div>
+    <div class="col-md-3">@Html.DisplayFor(m => m.FirstName)</div>
+
+    <div class="col-md-1">@Html.LabelFor(m => m.Patronymic)</div>
+    <div class="col-md-3">@Html.DisplayFor(m => m.Patronymic)</div>
+</div>
+
+<div class="row">
+    <div class="col-md-1">@Html.LabelFor(m => m.Age)</div>
+    <div class="col-md-3">@Html.DisplayFor(m => m.Age)</div>
+
+    <div class="col-md-1">@Html.LabelFor(m => m.Gender)</div>
+    <div class="col-md-3">@Html.DisplayFor(m => m.Gender)</div>
+
+    <div class="col-md-1">@Html.LabelFor(m => m.HasJob)</div>
+    <div class="col-md-3">@Html.DisplayFor(m => m.HasJob)</div>
+</div>
+<p>
+    @Html.ActionLink("Назад", "Index")
+</p>

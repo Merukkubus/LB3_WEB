@@ -1,0 +1,209 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+      <Schema Namespace="Хранилище STUDModel" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="AnswerW">
+          <Key>
+            <PropertyRef Name="QuestionNumber" />
+            <PropertyRef Name="HumanId" />
+          </Key>
+          <Property Name="QuestionNumber" Type="int" Nullable="false" />
+          <Property Name="HumanId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="AnswerTime" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="AnswerText" Type="varchar" MaxLength="1000" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Human">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="LastName" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="FirstName" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="Patronymic" Type="varchar" MaxLength="100" />
+          <Property Name="Age" Type="int" Nullable="false" />
+          <Property Name="Gender" Type="char" MaxLength="1" />
+          <Property Name="HasJob" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="QuestionW">
+          <Key>
+            <PropertyRef Name="Number" />
+          </Key>
+          <Property Name="Number" Type="int" Nullable="false" />
+          <Property Name="QuestionText" Type="varchar" MaxLength="1000" Nullable="false" />
+        </EntityType>
+        <Association Name="FK_Answer_Person">
+          <End Role="Human" Type="Self.Human" Multiplicity="1" />
+          <End Role="AnswerW" Type="Self.AnswerW" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Human">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="AnswerW">
+              <PropertyRef Name="HumanId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Answer_Question">
+          <End Role="QuestionW" Type="Self.QuestionW" Multiplicity="1" />
+          <End Role="AnswerW" Type="Self.AnswerW" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="QuestionW">
+              <PropertyRef Name="Number" />
+            </Principal>
+            <Dependent Role="AnswerW">
+              <PropertyRef Name="QuestionNumber" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="Хранилище STUDModelContainer">
+          <EntitySet Name="AnswerW" EntityType="Self.AnswerW" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Human" EntityType="Self.Human" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="QuestionW" EntityType="Self.QuestionW" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_Answer_Person" Association="Self.FK_Answer_Person">
+            <End Role="Human" EntitySet="Human" />
+            <End Role="AnswerW" EntitySet="AnswerW" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Answer_Question" Association="Self.FK_Answer_Question">
+            <End Role="QuestionW" EntitySet="QuestionW" />
+            <End Role="AnswerW" EntitySet="AnswerW" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="STUDModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="AnswerW">
+          <Key>
+            <PropertyRef Name="QuestionNumber" />
+            <PropertyRef Name="HumanId" />
+          </Key>
+          <Property Name="QuestionNumber" Type="Int32" Nullable="false" />
+          <Property Name="HumanId" Type="Guid" Nullable="false" />
+          <Property Name="AnswerTime" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="AnswerText" Type="String" MaxLength="1000" FixedLength="false" Unicode="false" Nullable="false" />
+          <NavigationProperty Name="Human" Relationship="Self.FK_Answer_Person" FromRole="AnswerW" ToRole="Human" />
+          <NavigationProperty Name="QuestionW" Relationship="Self.FK_Answer_Question" FromRole="AnswerW" ToRole="QuestionW" />
+        </EntityType>
+        <EntityType Name="Human">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Guid" Nullable="false" />
+          <Property Name="LastName" Type="String" MaxLength="100" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="FirstName" Type="String" MaxLength="100" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Patronymic" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="Age" Type="Int32" Nullable="false" />
+          <Property Name="Gender" Type="String" MaxLength="1" FixedLength="true" Unicode="false" />
+          <Property Name="HasJob" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="AnswerW" Relationship="Self.FK_Answer_Person" FromRole="Human" ToRole="AnswerW" />
+        </EntityType>
+        <EntityType Name="QuestionW">
+          <Key>
+            <PropertyRef Name="Number" />
+          </Key>
+          <Property Name="Number" Type="Int32" Nullable="false" />
+          <Property Name="QuestionText" Type="String" MaxLength="1000" FixedLength="false" Unicode="false" Nullable="false" />
+          <NavigationProperty Name="AnswerW" Relationship="Self.FK_Answer_Question" FromRole="QuestionW" ToRole="AnswerW" />
+        </EntityType>
+        <Association Name="FK_Answer_Person">
+          <End Role="Human" Type="Self.Human" Multiplicity="1" />
+          <End Role="AnswerW" Type="Self.AnswerW" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Human">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="AnswerW">
+              <PropertyRef Name="HumanId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Answer_Question">
+          <End Role="QuestionW" Type="Self.QuestionW" Multiplicity="1" />
+          <End Role="AnswerW" Type="Self.AnswerW" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="QuestionW">
+              <PropertyRef Name="Number" />
+            </Principal>
+            <Dependent Role="AnswerW">
+              <PropertyRef Name="QuestionNumber" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="PersonEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="AnswerW" EntityType="Self.AnswerW" />
+          <EntitySet Name="Human" EntityType="Self.Human" />
+          <EntitySet Name="QuestionW" EntityType="Self.QuestionW" />
+          <AssociationSet Name="FK_Answer_Person" Association="Self.FK_Answer_Person">
+            <End Role="Human" EntitySet="Human" />
+            <End Role="AnswerW" EntitySet="AnswerW" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Answer_Question" Association="Self.FK_Answer_Question">
+            <End Role="QuestionW" EntitySet="QuestionW" />
+            <End Role="AnswerW" EntitySet="AnswerW" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="Хранилище STUDModelContainer" CdmEntityContainer="PersonEntities">
+          <EntitySetMapping Name="AnswerW">
+            <EntityTypeMapping TypeName="STUDModel.AnswerW">
+              <MappingFragment StoreEntitySet="AnswerW">
+                <ScalarProperty Name="QuestionNumber" ColumnName="QuestionNumber" />
+                <ScalarProperty Name="HumanId" ColumnName="HumanId" />
+                <ScalarProperty Name="AnswerTime" ColumnName="AnswerTime" />
+                <ScalarProperty Name="AnswerText" ColumnName="AnswerText" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Human">
+            <EntityTypeMapping TypeName="STUDModel.Human">
+              <MappingFragment StoreEntitySet="Human">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="LastName" ColumnName="LastName" />
+                <ScalarProperty Name="FirstName" ColumnName="FirstName" />
+                <ScalarProperty Name="Patronymic" ColumnName="Patronymic" />
+                <ScalarProperty Name="Age" ColumnName="Age" />
+                <ScalarProperty Name="Gender" ColumnName="Gender" />
+                <ScalarProperty Name="HasJob" ColumnName="HasJob" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="QuestionW">
+            <EntityTypeMapping TypeName="STUDModel.QuestionW">
+              <MappingFragment StoreEntitySet="QuestionW">
+                <ScalarProperty Name="Number" ColumnName="Number" />
+                <ScalarProperty Name="QuestionText" ColumnName="QuestionText" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="false" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="Нет" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>
