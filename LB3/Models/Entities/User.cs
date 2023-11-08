@@ -12,25 +12,22 @@ namespace LB3.Models.Entities
     using System;
     using System.Collections.Generic;
     
-    public partial class Human
+    public partial class User
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public Human()
+        public User()
         {
-            this.AnswerW = new HashSet<AnswerW>();
+            this.Human = new HashSet<Human>();
         }
     
-        public System.Guid Id { get; set; }
-        public string LastName { get; set; }
-        public string FirstName { get; set; }
-        public string Patronymic { get; set; }
-        public int Age { get; set; }
-        public string Gender { get; set; }
-        public bool HasJob { get; set; }
-        public Nullable<System.Guid> UserID { get; set; }
+        public System.Guid ID { get; set; }
+        public string Login { get; set; }
+        public string PasswordHash { get; set; }
+        public System.Guid Salt { get; set; }
+        public int UserRole { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<AnswerW> AnswerW { get; set; }
-        public virtual User User { get; set; }
+        public virtual ICollection<Human> Human { get; set; }
+        public virtual Role Role { get; set; }
     }
 }

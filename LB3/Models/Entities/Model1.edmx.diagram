@@ -5,11 +5,15 @@
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
       <Diagram DiagramId="b6b20266a8e148f28276913d14e84630" Name="Diagram1">
-        <EntityTypeShape EntityType="STUDModel.AnswerW" Width="1.5" PointX="3" PointY="1.125" IsExpanded="true" />
-        <EntityTypeShape EntityType="STUDModel.Human" Width="1.5" PointX="0.75" PointY="1" IsExpanded="true" />
-        <EntityTypeShape EntityType="STUDModel.QuestionW" Width="1.5" PointX="5.625" PointY="1.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="STUDModel.AnswerW" Width="1.5" PointX="7.125" PointY="1" IsExpanded="true" />
+        <EntityTypeShape EntityType="STUDModel.Human" Width="1.5" PointX="5.25" PointY="0.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="STUDModel.QuestionW" Width="1.5" PointX="9" PointY="1.125" IsExpanded="true" />
         <AssociationConnector Association="STUDModel.FK_Answer_Person" ManuallyRouted="false" />
         <AssociationConnector Association="STUDModel.FK_Answer_Question" ManuallyRouted="false" />
+        <EntityTypeShape EntityType="STUDModel.Role" Width="1.5" PointX="1.125" PointY="1.875" />
+        <EntityTypeShape EntityType="STUDModel.User" Width="1.5" PointX="3.25" PointY="1" />
+        <AssociationConnector Association="STUDModel.FK_Human_User" />
+        <AssociationConnector Association="STUDModel.FK_User_Role" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

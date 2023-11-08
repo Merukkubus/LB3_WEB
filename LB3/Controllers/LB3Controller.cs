@@ -5,12 +5,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using System.Security.Cryptography;
+using System.Web.Security;
+using System.Text;
 
 namespace LB3.Controllers
 {
     public class LB3Controller : Controller
     {
-        // GET: LB3
+        [AllowAnonymous]
         public ActionResult Index()
         {
             List<Human> humans = new List<Human>();
@@ -24,6 +27,7 @@ namespace LB3.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public ActionResult PersonalDetails(Guid humanId)
         {
             Human model = new Human();
@@ -50,6 +54,7 @@ namespace LB3.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken()]
+        [Authorize(Roles = "Admin")]
         public ActionResult CreateHuman(HumanVM newHuman)
         {
             if (ModelState.IsValid)
@@ -75,6 +80,7 @@ namespace LB3.Controllers
             return View(newHuman);
         }
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public ActionResult EditHuman(Guid humanId)
         {
             HumanVM model;
@@ -95,6 +101,7 @@ namespace LB3.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken()]
+        [Authorize(Roles = "Admin")]
         public ActionResult EditHuman(HumanVM model) 
         {
             if(ModelState.IsValid)
@@ -120,6 +127,7 @@ namespace LB3.Controllers
             return View(model);
         }
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public ActionResult DeleteHuman(Guid humanId)
         {
             Human humanToDelete;
@@ -150,6 +158,75 @@ namespace LB3.Controllers
                 message = $"Вопросов отвечено: {q_ans_num}.";
             }
             return PartialView("QuestionAnswered", message);
+        }
+        [HttpGet]
+        public ActionResult Login()
+        {
+            return View();
+        }
+        [AllowAnonymous]
+        [HttpPost]
+        public ActionResult Login (UserVM webUser)
+        {
+            if (ModelState.IsValid)
+            {
+                using (var db = new PersonEntities())
+                {
+                    User user = null;
+                    user = db.User.Where(u => u.Login == webUser.Login).FirstOrDefault();
+                    if (user != null)
+                    {
+                        string passwordHash = ReturnHashCode(webUser.Password + user.Salt.ToString().ToUpper());
+                        if(passwordHash == user.PasswordHash)
+                        {
+                            string userRole = "";
+                            switch(user.UserRole)
+                            {
+                                case 1:
+                                    userRole = "Admin";
+                                    break;
+                                case 2:
+                                    userRole = "Participant";
+                                    break;
+                            }
+
+                            FormsAuthenticationTicket authTicket = new FormsAuthenticationTicket(
+                                1,
+                                user.Login,
+                                DateTime.Now,
+                                DateTime.Now.AddDays(1),
+                                false,
+                                userRole
+                            );
+                            string encryptedTicket = FormsAuthentication.Encrypt(authTicket);
+                            HttpContext.Response.Cookies.Add(new HttpCookie(FormsAuthentication.FormsCookieName, encryptedTicket));
+                            return RedirectToAction("Index");
+                        }
+                    }
+                }
+            }
+            ViewBag.Error = "Пользователь не найден";
+            return View(webUser);
+        }
+        string ReturnHashCode(string str)
+        {
+            string hash = "";
+            using(SHA1 sha1 = SHA1.Create())
+            {
+                byte[] data = sha1.ComputeHash(Encoding.UTF8.GetBytes(str));
+                StringBuilder sb = new StringBuilder();
+                for (int i = 0; i < data.Length; i++)
+                {
+                    sb.Append(data[i].ToString("x2"));
+                }
+                hash = sb.ToString().ToUpper();
+            }
+            return hash;
+        }
+        public ActionResult LogOut ()
+        {
+            FormsAuthentication.SignOut();
+            return RedirectToAction("Index");
         }
     }
 }

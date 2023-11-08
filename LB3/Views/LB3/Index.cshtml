@@ -9,9 +9,15 @@
 <div class="row">
     <div class="col-md-4"><strong>Наименование</strong></div>
     <div class="col-md-2"><strong>Возраст</strong></div>
-    <div class="col-md-2"><strong>#</strong></div>
-    <div class="col-md-2"><strong>#</strong></div>
-    <div class="col-md-2"><strong>#</strong></div>
+    @if (User.Identity.IsAuthenticated)
+    {
+        <div class="col-md-2"><strong>#</strong></div>
+        if (User.IsInRole("Admin"))
+       {
+           <div class="col-md-2"><strong>#</strong></div>
+           <div class="col-md-2"><strong>#</strong></div>
+       }
+    }
 </div>
 @foreach (var human in Model)
 {

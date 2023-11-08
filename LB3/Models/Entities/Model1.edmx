@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-      <Schema Namespace="Хранилище STUDModel" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="Хранилище STUDModel" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="AnswerW">
           <Key>
             <PropertyRef Name="QuestionNumber" />
@@ -26,6 +26,7 @@
           <Property Name="Age" Type="int" Nullable="false" />
           <Property Name="Gender" Type="char" MaxLength="1" />
           <Property Name="HasJob" Type="bit" Nullable="false" />
+          <Property Name="UserID" Type="uniqueidentifier" />
         </EntityType>
         <EntityType Name="QuestionW">
           <Key>
@@ -33,6 +34,23 @@
           </Key>
           <Property Name="Number" Type="int" Nullable="false" />
           <Property Name="QuestionText" Type="varchar" MaxLength="1000" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Role">
+          <Key>
+            <PropertyRef Name="RoleCode" />
+          </Key>
+          <Property Name="RoleCode" Type="int" Nullable="false" />
+          <Property Name="RoleName" Type="varchar" MaxLength="20" Nullable="false" />
+        </EntityType>
+        <EntityType Name="User">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Login" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="PasswordHash" Type="varchar" MaxLength="200" Nullable="false" />
+          <Property Name="Salt" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="UserRole" Type="int" Nullable="false" />
         </EntityType>
         <Association Name="FK_Answer_Person">
           <End Role="Human" Type="Self.Human" Multiplicity="1" />
@@ -58,10 +76,36 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_Human_User">
+          <End Role="User" Type="Self.User" Multiplicity="0..1" />
+          <End Role="Human" Type="Self.Human" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Human">
+              <PropertyRef Name="UserID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_User_Role">
+          <End Role="Role" Type="Self.Role" Multiplicity="1" />
+          <End Role="User" Type="Self.User" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Role">
+              <PropertyRef Name="RoleCode" />
+            </Principal>
+            <Dependent Role="User">
+              <PropertyRef Name="UserRole" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <EntityContainer Name="Хранилище STUDModelContainer">
           <EntitySet Name="AnswerW" EntityType="Self.AnswerW" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Human" EntityType="Self.Human" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="QuestionW" EntityType="Self.QuestionW" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Role" EntityType="Self.Role" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="User" EntityType="Self.User" Schema="dbo" store:Type="Tables" />
           <AssociationSet Name="FK_Answer_Person" Association="Self.FK_Answer_Person">
             <End Role="Human" EntitySet="Human" />
             <End Role="AnswerW" EntitySet="AnswerW" />
@@ -70,9 +114,16 @@
             <End Role="QuestionW" EntitySet="QuestionW" />
             <End Role="AnswerW" EntitySet="AnswerW" />
           </AssociationSet>
+          <AssociationSet Name="FK_Human_User" Association="Self.FK_Human_User">
+            <End Role="User" EntitySet="User" />
+            <End Role="Human" EntitySet="Human" />
+          </AssociationSet>
+          <AssociationSet Name="FK_User_Role" Association="Self.FK_User_Role">
+            <End Role="Role" EntitySet="Role" />
+            <End Role="User" EntitySet="User" />
+          </AssociationSet>
         </EntityContainer>
-      </Schema>
-    </edmx:StorageModels>
+      </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="STUDModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
@@ -100,6 +151,8 @@
           <Property Name="Gender" Type="String" MaxLength="1" FixedLength="true" Unicode="false" />
           <Property Name="HasJob" Type="Boolean" Nullable="false" />
           <NavigationProperty Name="AnswerW" Relationship="Self.FK_Answer_Person" FromRole="Human" ToRole="AnswerW" />
+          <Property Name="UserID" Type="Guid" />
+          <NavigationProperty Name="User" Relationship="STUDModel.FK_Human_User" FromRole="Human" ToRole="User" />
         </EntityType>
         <EntityType Name="QuestionW">
           <Key>
@@ -145,7 +198,61 @@
             <End Role="QuestionW" EntitySet="QuestionW" />
             <End Role="AnswerW" EntitySet="AnswerW" />
           </AssociationSet>
+          <EntitySet Name="Role" EntityType="STUDModel.Role" />
+          <EntitySet Name="User" EntityType="STUDModel.User" />
+          <AssociationSet Name="FK_Human_User" Association="STUDModel.FK_Human_User">
+            <End Role="User" EntitySet="User" />
+            <End Role="Human" EntitySet="Human" />
+          </AssociationSet>
+          <AssociationSet Name="FK_User_Role" Association="STUDModel.FK_User_Role">
+            <End Role="Role" EntitySet="Role" />
+            <End Role="User" EntitySet="User" />
+          </AssociationSet>
         </EntityContainer>
+        <EntityType Name="Role">
+          <Key>
+            <PropertyRef Name="RoleCode" />
+          </Key>
+          <Property Name="RoleCode" Type="Int32" Nullable="false" />
+          <Property Name="RoleName" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="User" Relationship="STUDModel.FK_User_Role" FromRole="Role" ToRole="User" />
+        </EntityType>
+        <EntityType Name="User">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Guid" Nullable="false" />
+          <Property Name="Login" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="PasswordHash" Type="String" Nullable="false" MaxLength="200" FixedLength="false" Unicode="false" />
+          <Property Name="Salt" Type="Guid" Nullable="false" />
+          <Property Name="UserRole" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Human" Relationship="STUDModel.FK_Human_User" FromRole="User" ToRole="Human" />
+          <NavigationProperty Name="Role" Relationship="STUDModel.FK_User_Role" FromRole="User" ToRole="Role" />
+        </EntityType>
+        <Association Name="FK_Human_User">
+          <End Type="STUDModel.User" Role="User" Multiplicity="0..1" />
+          <End Type="STUDModel.Human" Role="Human" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Human">
+              <PropertyRef Name="UserID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_User_Role">
+          <End Type="STUDModel.Role" Role="Role" Multiplicity="1" />
+          <End Type="STUDModel.User" Role="User" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Role">
+              <PropertyRef Name="RoleCode" />
+            </Principal>
+            <Dependent Role="User">
+              <PropertyRef Name="UserRole" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -165,6 +272,7 @@
           <EntitySetMapping Name="Human">
             <EntityTypeMapping TypeName="STUDModel.Human">
               <MappingFragment StoreEntitySet="Human">
+                <ScalarProperty Name="UserID" ColumnName="UserID" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
                 <ScalarProperty Name="LastName" ColumnName="LastName" />
                 <ScalarProperty Name="FirstName" ColumnName="FirstName" />
@@ -180,6 +288,25 @@
               <MappingFragment StoreEntitySet="QuestionW">
                 <ScalarProperty Name="Number" ColumnName="Number" />
                 <ScalarProperty Name="QuestionText" ColumnName="QuestionText" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Role">
+            <EntityTypeMapping TypeName="STUDModel.Role">
+              <MappingFragment StoreEntitySet="Role">
+                <ScalarProperty Name="RoleName" ColumnName="RoleName" />
+                <ScalarProperty Name="RoleCode" ColumnName="RoleCode" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="User">
+            <EntityTypeMapping TypeName="STUDModel.User">
+              <MappingFragment StoreEntitySet="User">
+                <ScalarProperty Name="UserRole" ColumnName="UserRole" />
+                <ScalarProperty Name="Salt" ColumnName="Salt" />
+                <ScalarProperty Name="PasswordHash" ColumnName="PasswordHash" />
+                <ScalarProperty Name="Login" ColumnName="Login" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
