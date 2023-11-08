@@ -74,5 +74,82 @@ namespace LB3.Controllers
             ViewBag.Genders = new SelectList(GetGenderList(), "Item1", "Item2");
             return View(newHuman);
         }
+        [HttpGet]
+        public ActionResult EditHuman(Guid humanId)
+        {
+            HumanVM model;
+            using (var db = new PersonEntities())
+            {
+                Human hm = db.Human.Find(humanId);
+                model = new HumanVM()
+                {
+                    Id = hm.Id,
+                    LastName = hm.LastName,
+                    FirstName = hm.FirstName,
+                    Gender = hm.Gender,
+                    Age = hm.Age,
+                    HasJob = hm.HasJob,
+                };
+            }
+            return View(model);
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken()]
+        public ActionResult EditHuman(HumanVM model) 
+        {
+            if(ModelState.IsValid)
+            {
+                using (var db = new PersonEntities())
+                {
+                    Human editedHuman = new Human
+                    {
+                        Id = model.Id,
+                        LastName = model.LastName,
+                        FirstName = model.FirstName,
+                        Gender = model.Gender,
+                        Age = model.Age,
+                        HasJob = model.HasJob,
+                    };
+                    db.Human.Attach(editedHuman);
+                    db.Entry(editedHuman).State = System.Data.Entity.EntityState.Modified;
+                    db.SaveChanges();
+                }
+                return RedirectToAction("Index");
+            }
+            ViewBag.Genders = new SelectList(GetGenderList(), "Item1", "Item2");
+            return View(model);
+        }
+        [HttpGet]
+        public ActionResult DeleteHuman(Guid humanId)
+        {
+            Human humanToDelete;
+            using(var db = new PersonEntities())
+            {
+                humanToDelete = db.Human.Find(humanId);
+            }
+            return View(humanToDelete);
+        }
+        [HttpPost, ActionName("DeleteHuman")]
+        public ActionResult DeleteConfirmed(Guid humanId)
+        {
+            using(var db = new PersonEntities())
+            {
+                Human humanToDelete = db.Human.Find(humanId);
+                db.Human.Remove(humanToDelete);
+                db.SaveChanges();
+            }
+            return RedirectToAction("Index");
+        }
+        [ChildActionOnly]
+        public ActionResult QuestionAnswered(Guid humanId)
+        {
+            string message = "";
+            using (var db = new PersonEntities())
+            {
+                int q_ans_num = db.Human.Find(humanId).AnswerW.Count();
+                message = $"Вопросов отвечено: {q_ans_num}.";
+            }
+            return PartialView("QuestionAnswered", message);
+        }
     }
 }
