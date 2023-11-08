@@ -28,5 +28,7 @@ namespace LB3.Models.Entities
         public virtual DbSet<AnswerW> AnswerW { get; set; }
         public virtual DbSet<Human> Human { get; set; }
         public virtual DbSet<QuestionW> QuestionW { get; set; }
+
+        public System.Data.Entity.DbSet<LB3.Models.ViewModels.HumanVM> HumanVMs { get; set; }
     }
 }
