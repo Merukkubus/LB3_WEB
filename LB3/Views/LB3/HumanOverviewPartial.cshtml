@@ -1,0 +1,10 @@
+﻿@model LB3.Models.Entities.Human
+<div class= "row">
+    <div class="col-md-5"">@Model.LastName @Model.FirstName @Model.Patronymic 
+        (@{ Html.RenderAction("QuestionAnswered", new { humanId = Model.Id }); })
+    </div>
+    <div class="col-md-1">@Model.Age</div>
+    <div class="col-md-2">@Html.ActionLink("подробнее", "PersonalDetails", "LB3", new { humanId = Model.Id }, null)</div>
+    <div class="col-md-2">@Html.ActionLink("редактировать", "EditHuman", "LB3", new { humanId = Model.Id })</div>
+    <div class="col-md-2">@Html.ActionLink("удалить", "DeleteHuman", "LB3", new { humanId = Model.Id })</div>
+</div>

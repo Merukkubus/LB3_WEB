@@ -37,5 +37,17 @@ namespace LB3.Models.ViewModels
         [Required]
         [DisplayName("Трудоустроен")]
         public bool HasJob { get; set; }
+
+        [DisplayName("Дата рождения")]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
+        public DateTime Birthday { get; set; }
+
+        [DisplayName("Дата и время добавления")]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-ddThh:mm}", ApplyFormatInEditMode = true)]
+        public DateTime InsertedDateTime { get; set; }
+
+        [DisplayName("Время подъема")]
+        [DisplayFormat(DataFormatString = "{0:HH:mm:ss}", ApplyFormatInEditMode = true)]
+        public DateTime WakeUpTime { get; set; }
     }
 }
